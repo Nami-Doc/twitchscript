@@ -1,9 +1,8 @@
 // ==UserScript==
-// @author 		   Itaku
-// @name           Itaku Twitch Chat
-// @version 	   1.1.1
-// @description    Itaku's Twitch Chat Addon.
-// @namespace      http://itaku-bot.com/
+// @author 		   Vendethiel & Itaku
+// @name           IV Twitch
+// @version 	   1.0.0
+// @description    IV Twitch
 // @include        http://twitch.tv/*
 // @include        http://*.twitch.tv/*
 // ==/UserScript==

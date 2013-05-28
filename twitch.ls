@@ -33,8 +33,7 @@ export BetterTtvEngine = !->
 			| 'user'
 				nickname = CurrentChat.real_username user
 				nickname .= replace /%/g '_' .replace /[<>,]/g ''
-				log "#nickname got bent"
-				$j "\#chat_line_list .chat_from_#nickname .chatline"
+				$j "\#chat_line_list .chat_from_#nickname .chat_line"
 					.addClass 'banned_user_line'
 
 				@admin_message "#{twitch-link nickname}'s messages have been hidden by a moderator."
