@@ -5,7 +5,7 @@ err = -> throw new Error "IV-Twitch ERROR: #it"
 
 var bttvdark
 
-export BetterTtvEngine = !->
+let
 	chat-moderator = !->
 		return unless $ 'chat_lines'
 
@@ -23,23 +23,49 @@ export BetterTtvEngine = !->
 				info.tagtype = 'admin'
 			if info.color in <[springgreen]>
 				info.color = 'blue'
+			
 			@insert_chat_line2 info
+			
+			if can-moderate
+				$j '.mod_button.timeout:last'
+				.after do
+					$j '<span title="Clear (purge previous messages)">C</span>'
+					.click !->
+						"Get bented #{info.nickname}"
+						CurrentChat.say "/timeout #{info.nickname} 1"
 
+		can-moderate =
+			PP.login is PP.channel
+			or PP.is_admin is "true"
+			or PP.is_subadmin is "true"
+			or CurrentChat.staff[PP.login]
+			or CurrentChat.admins[PP.login]
+			or CurrentChat.moderators[PP.login]
 
+		banlist = []
 		CurrentChat.handlers.clear_chat = !({target, user}) ->
 			switch target
 			| 'all'
 				@admin_message "Chat cleared by a moderator (Prevented by IV-Twitch)."
 			| 'user'
-				nickname = CurrentChat.real_username user
-				nickname .= replace /%/g '_' .replace /[<>,]/g ''
+				nickname = sanitize-nickname user
+				
+				return if nickname in banlist
+				banlist.push nickname
+				idx = banlist.length
+				(`setTimeout` 5000ms) !-> banlist.slice idx-1 1
+				
 				$j "\#chat_line_list .chat_from_#nickname .chat_line"
 					.addClass 'banned_user_line'
 
 				@admin_message "#{twitch-link nickname}'s messages have been hidden by a moderator."
 			| otherwise
 				log "Got a #target unhandled event"
-			
+		
+		function sanitize-nickname
+			it = CurrentChat.real_username it
+			it.replace /%/g '_' .replace /[<>,]/g ''
+
 		CurrentChat.timedBan = !(time) ->
 			CurrentChat.say "/timeout #{$ 'user_info' .current_login} #time"
 
@@ -106,7 +132,6 @@ export BetterTtvEngine = !->
 		log "CALL:init (from #loc)"
 		over18!
 		setTimeout delayed, 1_000ms
-BetterTtvEngine!
 
 export bttv-action = !->
 	switch it
@@ -133,6 +158,9 @@ export bttv-action = !->
 	| 'related'
 		localStorage.related = invert-strbool localStorage.related
 		window.location.reload!
+
+function twitch-link
+	"<a href='http://twitch.tv/#it'>#it</a>"
 
 # inverts a string boolean
 function invert-strbool
