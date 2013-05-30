@@ -25,14 +25,18 @@ let
 				info.color = 'blue'
 			
 			@insert_chat_line2 info
-			
-			if can-moderate
-				$j '.mod_button.timeout:last'
-				.after do
-					$j '<span title="Clear (purge previous messages)">C</span>'
-					.click !->
-						"Get bented #{info.nickname}"
-						CurrentChat.say "/timeout #{info.nickname} 1"
+
+			if can-moderate and info.nickname not in [PP.login, CurrentChat.last_sender]
+				@insert_with_lock do
+					'.mod_button.timeout:last'
+					"""
+					<span
+					 class="inline_purge"
+					 title="Clear (purge messages from #{info.nickname})"
+					 onclick="CurrentChat.say('/timeout #{info.nickname} 1')">
+						<img src="https://dl.dropboxusercontent.com/u/30070822/ttvchat/trash.gif" />
+					</span>
+					"""
 
 		can-moderate =
 			PP.login is PP.channel
@@ -58,7 +62,7 @@ let
 				$j "\#chat_line_list .chat_from_#nickname .chat_line"
 					.addClass 'banned_user_line'
 
-				@admin_message "#{twitch-link nickname}'s messages have been hidden by a moderator."
+				@admin_message "#{twitch-link nickname}'s messages have been hidden by a moderator (IV-Twitch)."
 			| otherwise
 				log "Got a #target unhandled event"
 		
