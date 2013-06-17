@@ -7,7 +7,7 @@ var bttvdark
 
 let
 	chat-moderator = !->
-		return unless $ 'chat_lines'
+		return unless $j '#chat_lines'
 
 		if !CurrentChat.show_timestamps and CurrentChat.toggle_show_timestamps
 			toggle_checkbox? 'toggle_chat_timestamps'
@@ -55,8 +55,7 @@ let
 				nickname = sanitize-nickname user
 				
 				return if nickname in banlist
-				banlist.push nickname
-				idx = banlist.length
+				idx = banlist.push nickname
 				(`setTimeout` 5000ms) !-> banlist.slice idx-1 1
 				
 				$j "\#chat_line_list .chat_from_#nickname .chat_line"
@@ -71,10 +70,10 @@ let
 			it.replace /%/g '_' .replace /[<>,]/g ''
 
 		CurrentChat.timedBan = !(time) ->
-			CurrentChat.say "/timeout #{$ 'user_info' .current_login} #time"
+			CurrentChat.say "/timeout #{$j '#user_info' .current_login} #time"
 
 	bttvbox = !->
-		return unless settings-menu = $ 'chat_settings_dropmenu'
+		return unless settings-menu = $j '#chat_settings_dropmenu'
 		bttvdark := 'false'
 
 		check-tf = invert-strbool localStorage.narrowchat
@@ -103,14 +102,14 @@ let
 					</li>
 				</ul>
 			"""
-		settings-menu.appendChild bttvdiv
+		settings-menu.append bttvdiv
 
 		for setting in <[narrowchat related]>
 			if localStorage[setting] is 'true'
-				$ setting .checked = true
+				$j "##setting" .checked = true
 
 	over18 = !->
-		$ 'roadblock_button' ?.click!
+		$j '#roadblock_button' ?.click!
 
 
 	delayed = !->
@@ -129,8 +128,8 @@ let
 		if ~loc.search 'meebo.html'
 			console.log ':( meebo'
 			return
-		unless $?
-			console.log ':( $'
+		unless $j?
+			console.log ':( $j'
 			return
 
 		log "CALL:init (from #loc)"
@@ -141,9 +140,9 @@ export bttv-action = !->
 	switch it
 	| 'dark'
 		bttvdark := 'true'
-		for el in $$ '#chat_column' # XXX css?
+		for el in $j '#chat_column' # XXX css?
 			el.style.background = '#111'
-		for el in $$ '#chat_lines'
+		for el in $j '#chat_lines'
 			el.style <<<
 				background: '#111'
 				color: '#eee'
@@ -154,7 +153,7 @@ export bttv-action = !->
 				color: '#fff'
 				border: 'solid 1px #666'
 	| 'clear'
-		$ 'chat_line_list' .innerHTML = ''
+		$j 'chat_line_list' .html ''
 		CurrentChat.admin_message "IV-Twitch: Cleared chat."
 	| 'narrowchat'
 		localStorage.narrowchat = invert-strbool localStorage.narrowchat
