@@ -114,10 +114,8 @@ let
 
 	delayed = !->
 		log "CALL:delayed"
-		#brand! # what it this supposed to do, exactly ? ...
 		chat-moderator!
 		bttvbox!
-		# preloadchatimages! # OK LOL. no!
 
 	do init = !->
 		document.body.classList.add if localStorage.narrowchat is 'true'
@@ -140,7 +138,8 @@ export bttv-action = !->
 	switch it
 	| 'dark'
 		bttvdark := 'true'
-		for el in $j '#chat_column' # XXX css?
+		# this would work so much better with css!
+		for el in $j '#chat_column'
 			el.style.background = '#111'
 		for el in $j '#chat_lines'
 			el.style <<<
