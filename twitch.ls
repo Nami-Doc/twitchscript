@@ -139,18 +139,7 @@ export bttv-action = !->
 	| 'dark'
 		bttvdark := 'true'
 		# this would work so much better with css!
-		for el in $j '#chat_column'
-			el.style.background = '#111'
-		for el in $j '#chat_lines'
-			el.style <<<
-				background: '#111'
-				color: '#eee'
-				border: '#fff'
-		for el in '#chat_text_input'
-			el.style <<<
-				background: '#000'
-				color: '#fff'
-				border: 'solid 1px #666'
+		$j '#twitch_chat' .addClass 'dark-chat'
 	| 'clear'
 		$j 'chat_line_list' .html ''
 		CurrentChat.admin_message "IV-Twitch: Cleared chat."
