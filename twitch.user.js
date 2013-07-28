@@ -12,7 +12,7 @@ salt = Math.round(Math.random() * 1000000)
 var script = document.createElement('script')
 script.type = 'text/javascript'
 script.src = "https://dl.dropboxusercontent.com/u/105712836/twitchscript/twitch.js?"+salt
-head = document.getElementsByTagName('head')[0]
+var head = document.head
 
 var style = document.createElement('link')
 style.rel = 'stylesheet'
