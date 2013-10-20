@@ -1,0 +1,7 @@
+1.1.0:
+ Added chat history (up/down arrow keys)
+ Added an auto color switcher (each time you post)
+ Removed an old feature ("hide featured channel") (from bttv)
+1.0.0:
+ Yay, release
+ This is basically a rewrite of bttv
