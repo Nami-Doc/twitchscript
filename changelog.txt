@@ -1,3 +1,5 @@
+1.1.1:
+ Name autocompletion
 1.1.0:
  Added chat history (up/down arrow keys)
  Added an auto color switcher (each time you post)

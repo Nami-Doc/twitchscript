@@ -5,8 +5,9 @@ err = -> throw new Error "IV-Twitch ERROR: #it"
 
 
 colors = let
+	# SpringGreen
 	colors = <[
-		Blue Coral DodgerBlue SpringGreen YellowGreen Green OrangeRed Red
+		Blue Coral DodgerBlue YellowGreen Green OrangeRed Red
 		GoldenRod HotPink CadetBlue SeaGreen Chocolate BlueViolet Firebrick
 	]>
 	color-idx = 0
@@ -20,6 +21,8 @@ colors = let
 
 old-messages = []
 old-messages-idx = 0
+
+old-usernames = []
 
 chat-moderator = !->
 	return unless $j '#chat_lines'
@@ -35,15 +38,33 @@ chat-moderator = !->
 	Chat::insert_chat_line2 = Chat::insert_chat_line
 	last-chatter = ""
 	Chat::insert_chat_line = !(info) ->
+		if info.nickname is 'jtv' # info messages
+			@insert_chat_line2 info
+			return
 		if info.nickname is PP.login
+			# colors
 			colors.trigger! unless info.nickname is last-chatter
+			# chat history
 			old-messages.unshift info.message
 			old-messages-idx := 0
-		if info.color in <[springgreen]>
+		else
+			# username autocomplete
+			old-usernames
+				unless info.nickname in ..
+					..unshift info.nickname
+					..length-- if ..length > 50
+
+		# anticolors
+		if info.color.to-lower-case! in <[springgreen]>
 			info.color = 'blue'
+		# chat history
 		last-chatter := info.nickname
+
+
+		# twitch's behavior
 		@insert_chat_line2 info
 
+		# add purge button (not working atm ? :d)
 		if can-moderate and info.nickname not in [PP.login, CurrentChat.last_sender]
 			@insert_with_lock do
 				'.mod_button.timeout:last'
@@ -128,30 +149,58 @@ create-box = !->
 chat-history = !->
 	const KEY_ARROWUP = 38
 		KEY_ARROWDOWN = 40
-	$j '#chat_text_input' .keyup !->
-		return if @value and @value not in old-messages
-		return unless old-messages.length
-		switch it.which
-		| KEY_ARROWUP
-			message = old-messages[old-messages-idx++]
-		| KEY_ARROWDOWN
-			message = old-messages[old-messages-idx--]
-		| _ => return
-		@value = message ? old-messages[old-messages-idx := 0]
+	<- $j '#chat_text_input' .keyup
+	return if @value and @value not in old-messages
+	return unless old-messages.length
+	switch it.which
+	| KEY_ARROWUP
+		message = old-messages[old-messages-idx++]
+	| KEY_ARROWDOWN
+		message = old-messages[old-messages-idx--]
+	| _ => return
+	@value = message ? old-messages[old-messages-idx := 0]
+	false
+
+autocomplete-idx = 0
+username-autocomplete = !->
+	const KEY_TAB = 9
+	$j '#chat_text_input' .on 'keydown' ->
+		unless it.which is KEY_TAB
+			return not autocomplete-idx := 0
+		username = (@value / /\b/g)pop!to-lower-case!
+		len = username.length
+		# scan for matches
+		matches = for old-username in old-usernames
+			if username is old-username.substr 0 len .to-lower-case!
+				old-username
+		unless matches.length
+			# got nothing =( ?
+			return not autocomplete-idx := 0
+		# let's process with what we got
+		if autocomplete-idx
+			@value -= /[a-z0-9_-]+:\s$/i
+		++autocomplete-idx
+		for old-username, i in matches
+			if i + 1 is autocomplete-idx
+				# todo check if there are multiple possibilities?
+				@value .= substr 0 (@value.length - len)
+				@value += "#{old-username.0.to-upper-case! + old-username.substr 1}#{[@value and ': ']}"
+				return false
 		false
 
 over18 = !->
 	$j '#roadblock_button' ?.click!
 
 init-options = !->
-	if localStorage.colorswitcher is 'true'
-		colors.enabled = true
-		log "Color switcher enabled"
+	return unless localStorage.colorswitcher is 'true'
+	colors.enabled = true
+	log "Color switcher enabled"
 
 delayed = !->
 	log "CALL:delayed"
 	chat-moderator!
 	chat-history!
+	username-autocomplete!
 	create-box!
 
 # options
@@ -191,7 +240,7 @@ export bttv-action = !->
 
 last-command = Date.now!
 function can-command
-	if Date.now! > last-command + 2_000ms
+	if Date.now! > last-command + 3_000ms
 		last-command := Date.now!
 		true
 	else
