@@ -5,9 +5,8 @@ err = -> throw new Error "IV-Twitch ERROR: #it"
 
 
 colors = let
-	# SpringGreen
 	colors = <[
-		Blue Coral DodgerBlue YellowGreen Green OrangeRed Red
+		Blue Coral SpringGreen DodgerBlue YellowGreen Green OrangeRed Red
 		GoldenRod HotPink CadetBlue SeaGreen Chocolate BlueViolet Firebrick
 	]>
 	color-idx = 0
