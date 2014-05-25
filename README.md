@@ -1,6 +1,13 @@
+### DEPRECATED
+
+I now started contributing on BetterTTV ! It's actually [on GitHub now !](http://github.com/night/betterttv).
+
+### Old readme
+
+
 https://github.com/Nami-Doc/twitchscript/blob/master/twitch.user.js
 
-Telru a fait un script pour Twitch qui permet de
+script pour
  - ne pas "subir" les /clear
  - continuer à voir les messages "censurés" (quand quelqu'un se fait timeout)
  - agrandir un peu le chat (même si je crois pas que ça marche /o/)
