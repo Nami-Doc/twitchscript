@@ -1,6 +1,6 @@
 ### DEPRECATED
 
-I now started contributing on BetterTTV ! It's actually [on GitHub now !](http://github.com/night/betterttv).
+I now started contributing on BetterTTV ! It's actually [on GitHub now](http://github.com/night/betterttv).
 
 ### Old readme
 
